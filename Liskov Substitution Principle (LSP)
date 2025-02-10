@@ -1,0 +1,56 @@
+-- Violation of Liskov Substitution Principle (LSP)
+The Liskov Substitution Principle (LSP) states that a subclass should be substitutable for its base class without altering the correctness of the system.
+
+In this case, CodPayment violates LSP because:
+
+PaymentMethod.pay() is expected to immediately process the payment.
+CodPayment.pay() does not charge the customer but instead marks the order as “Pending Payment.”
+If a system component calls pay(), expecting an instant transaction, CodPayment breaks this expectation, potentially causing unexpected behavior.
+
+-- Proposed Design Solution
+Instead of forcing CodPayment to inherit from PaymentMethod, we introduce a new abstraction for offline payments.
+
+-- class diagram
+
++----------------------+
+|   PaymentMethod     |  <-- Abstract Base Class
+|----------------------|
+| pay()               |
++----------------------+
+     |       
+     |------------------------|
+     |                        |
++------------------+   +----------------+
+| OnlinePayment   |   | OfflinePayment  |
+|-----------------|   |----------------|
+| pay()          |   | confirmPayment() |
++----------------+   +----------------+
+     |       
+     |------------------------------|
+     |                              |
++------------------+        +----------------+
+| CreditCardPayment |        | PayPalPayment  |
+|------------------|        |----------------|
+| pay()           |        | pay()          |
++----------------+        +----------------+
++------------------+
+| CodPayment       |  <-- Inherits from OfflinePayment
+|------------------|
+| confirmPayment() |
++------------------+
+
+
+-- Explanation of the Revised Design
+1. Abstract Class: PaymentMethod
+  -->Defines common behavior but does not force pay() on all payments.
+2. OnlinePayment (For Instant Transactions)
+  -->Includes pay(), ensuring that all online payments immediately process funds.
+  -->CreditCardPayment and PayPalPayment inherit from this class.
+3. OfflinePayment (For Delayed Payments Like COD)
+  -->Defines confirmPayment() instead of pay().
+  -->CodPayment correctly fits into this category without violating LSP.
+
+-- How This Design Adheres to LSP
+--> Subclasses remain substitutable: CreditCardPayment and PayPalPayment can replace OnlinePayment without breaking system expectations.
+--> CodPayment no longer disrupts pay() expectations, as it follows a different flow under OfflinePayment.
+--> Maintains clarity and scalability: New online or offline payment methods can be added without modifying existing classes.
