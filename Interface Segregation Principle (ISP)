@@ -1,0 +1,52 @@
+-- Violation of Interface Segregation Principle (ISP)
+The Interface Segregation Principle (ISP) states that no client should be forced to depend on methods it does not use.
+
+Currently, the IMerchantServices interface violates ISP because:
+
+--> It includes unrelated functionalities in one interface.
+--> Different classes need only a subset of these methods, but they are forced to implement all.
+
+--> Identifying Unnecessary Methods for Specific Classes
+
+  1. InventoryManager
+    --> Needs: manageInventory()
+    --> Unnecessary: processOrder(), refundOrder(), generateDiscountCoupons(), trackDelivery(), handleCustomerSupport().
+    
+  2.CustomerSupportRep
+    --> Needs: handleCustomerSupport()
+    --> Unnecessary: processOrder(), refundOrder(), generateDiscountCoupons(), trackDelivery(), manageInventory().
+         
+  3.MarketingManager
+  --> Needs: generateDiscountCoupons()
+  --> Unnecessary: processOrder(), refundOrder(), trackDelivery(), manageInventory(), handleCustomerSupport().
+
+-- Proposed Segmented Interfaces
+Instead of a bloated IMerchantServices, we create separate interfaces, grouping related behaviors together.
+
+-- Refactored Interfaces and Methods
+1.IOrderProcessing
+--> processOrder()
+--> refundOrder()
+
+2.IDeliveryTracking
+--> trackDelivery()
+
+3.IInventoryManagement
+--> manageInventory()
+
+4. IMarketing
+--> generateDiscountCoupons()
+
+5.ICustomerSupport
+--> handleCustomerSupport()
+
+-- Justification for ISP Compliance
+1. Improved Maintainability
+Classes now implement only the methods they actually need, making code easier to manage.
+2. Enhanced Flexibility and Scalability
+If a new class needs only one responsibility (e.g., MarketingManager only needs generateDiscountCoupons()), it does not depend on unrelated methods.
+3. Reduced Risk of Unexpected Errors
+Unnecessary method dependencies increase complexity and potential bugs when modifying a class.
+Segmentation ensures that modifying handleCustomerSupport() does not affect InventoryManager.
+
+
