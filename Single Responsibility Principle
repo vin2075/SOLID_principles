@@ -1,0 +1,44 @@
+-- Identifying Responsibilities
+The OrderProcessor class currently violates the Single Responsibility Principle (SRP) because it handles multiple concerns:
+
+Order Calculation – Computes the total price, applying discounts and taxes.
+Order Persistence – Saves order details to the database.
+Order Notification – Sends an order confirmation email to the customer.
+
+--------
+Why Multiple Responsibilities Are Problematic
+Tightly Coupled Code: Changes in one functionality (e.g., tax rules) might unintentionally affect another (e.g., database persistence).
+Difficult to Maintain & Extend: If we need to modify the email format, we shouldn't have to touch price calculations or database operations.
+Reduced Testability: Testing individual functionalities is harder because they are intertwined.
+Proposed Refactor
+
+---------
+We can split OrderProcessor into three separate classes:
+
+OrderCalculator – Responsible for calculating the total price, applying discounts, and computing taxes.
+OrderRepository – Handles database interactions, such as saving order details.
+OrderNotifier – Manages email notifications.
+A new class, OrderProcessor, will now act as a coordinator, ensuring each component performs its specific task.
+
+-- class Diagram
+
++------------------+
+|  OrderProcessor  |
+|------------------|
+| processOrder()   |
++------------------+
+       |        
+       v        
++------------------+     +----------------+     +----------------+
+| OrderCalculator  | --> | OrderRepository | --> | OrderNotifier  |
+|------------------|     |----------------|     |----------------|
+| calculateTotal() |     | saveOrder()     |     | sendEmail()    |
++------------------+     +----------------+     +----------------+
+
+------------
+-- Justification & Benefits
+By refactoring, we ensure each class has a single responsibility, making the system more modular and maintainable:
+
+Improved Readability: Each class does one thing well, making it easier to understand.
+Better Testability: We can independently test order calculations, database interactions, and email notifications.
+Easier Modifications: Changes in tax rules or notification mechanisms won’t impact order persistence logic.
