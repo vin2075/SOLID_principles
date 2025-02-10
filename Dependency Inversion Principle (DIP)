@@ -1,0 +1,51 @@
+-- Violation of Dependency Inversion Principle (DIP)
+The OrderNotifier class currently depends directly on EmailService, which creates tight coupling between them. This violates DIP because:
+
+1. The class depends on a low-level module (EmailService) instead of an abstraction.
+2. If we need to introduce SMSService, we must modify OrderNotifier, breaking the Open/Closed Principle as well.
+3. Testing becomes harder since OrderNotifier is tightly bound to EmailService, making it difficult to substitute with a mock notification service.
+
+-- Proposed Abstraction: INotificationService
+To decouple OrderNotifier from a specific notification service, we introduce an abstraction:
+
+New Interface: INotificationService
+
++--------------------------+
+|      INotificationService      |
+|--------------------------|
+| + sendNotification(message) |
++--------------------------+
+
+-- Implementations
+EmailService implements INotificationService
+SMSService implements INotificationService
+
+-- Refactored OrderNotifier Using Dependency Injection
+Instead of creating an EmailService instance directly, OrderNotifier now depends on INotificationService:
+
++----------------------+
+|   OrderNotifier         |
+|----------------------|
+| - INotificationService  |
+|----------------------|
+| + notifyUser(message)  |
++----------------------+
+
+-- Dependency Injection Strategy
+To provide flexibility in selecting the notification method, we inject INotificationService using constructor injection:
+
+1. Constructor Injection (Recommended)
+--> OrderNotifier receives an INotificationService instance in its constructor.
+--> Ensures mandatory dependency injection at object creation.
+2. Setter Injection
+--> Allows setting/changing the INotificationService instance later.
+3.Factory Pattern
+--> A factory determines which service to provide dynamically.
+
+-- Justification for DIP Compliance
+By following DIP:
+
+--> OrderNotifier now depends on an abstraction (INotificationService) instead of a concrete class (EmailService), making the system flexible.
+--> New notification types (e.g., PushNotificationService) can be added without modifying OrderNotifier, adhering to OCP.
+--> Testing becomes easier by injecting mock implementations of INotificationService.
+
