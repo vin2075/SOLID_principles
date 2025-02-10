@@ -7,3 +7,5 @@ Applying SOLID principles in software development improves maintainability, scal
 -- Best Practices for SOLID Principles
 
 To effectively implement SOLID principles, follow modular design, where each class has a clear, single responsibility. Use abstraction and polymorphism to enable extension without modification. Apply Liskov Substitution by designing subclasses that adhere to base class contracts. Keep interfaces small and specific to prevent unnecessary dependencies. Utilize dependency injection to invert dependencies and promote loosely coupled architecture. Follow unit testing and refactor regularly to ensure adherence. When designing systems, favor composition over inheritance to maintain flexibility. These best practices ensure that code remains scalable, testable, and adaptable for future requirements.
+
+
