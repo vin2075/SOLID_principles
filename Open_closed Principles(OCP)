@@ -1,0 +1,48 @@
+-- Identifying the Existing Problem
+
+If discount logic is embedded directly within the OrderCalculator class, any new discount type (e.g., Buy-One-Get-One-Free, holiday discounts, coupon codes) requires modifying existing code.
+
+-- Why This Violates OCP
+--> Not Open for Extension: Every time a new discount is introduced, we must change the OrderCalculator class.
+--> Not Closed for Modification: Frequent changes increase the risk of introducing bugs and breaking existing functionality.
+--> Difficult to Maintain: Hardcoding discount logic makes the class more complex and tightly coupled.
+    
+Designing an Extensible Solution
+To adhere to OCP, we introduce a Strategy Pattern for discounts. Instead of modifying OrderCalculator, we define an interface (DiscountStrategy) and create separate classes for each discount type.
+
+-- Class Diagram (Text Representation)
+
++------------------+
+| OrderCalculator  |
+|------------------|
+| calculateTotal() |
++------------------+
+        |
+        v
++------------------+        +------------------+        +----------------------+
+| DiscountStrategy | <----- |  BOGODiscount    |        | HolidayDiscount      |
+|------------------|        |------------------|        |----------------------|
+| applyDiscount()  |        | applyDiscount()  |        | applyDiscount()      |
++------------------+        +------------------+        +----------------------+
+
+
+-- Explanation of the New Design
+
+1. DiscountStrategy (Interface)
+--> Defines a common method: applyDiscount(Order order).
+--> Allows different discount policies to be implemented without modifying existing logic.
+
+2. Concrete Discount Classes
+--> BOGODiscount (Buy-One-Get-One-Free)
+--> HolidayDiscount (Flat discount on holidays)
+--> CouponDiscount (Applies discount based on coupon codes)
+    Each class implements DiscountStrategy, providing its own discount logic.
+
+3. OrderCalculator (Modified)
+--> Calls applyDiscount() dynamically based on the selected discount type.
+--> New discount strategies can be added without modifying OrderCalculator.
+
+-- How This Aligns with OCP
+--> Open for Extension: We can introduce new discounts simply by adding new classes without modifying existing code.
+--> Closed for Modification: Core pricing logic remains untouched, reducing the risk of breaking existing functionality.
+--> Improved Maintainability & Scalability: Easy to add/remove discount types as business needs change.
